@@ -1,0 +1,56 @@
+{
+    "campaigns": [
+        {
+            "name": "Fixed amount",
+            "type": "Coupon"
+        },
+        {
+            "name": "Percentage discount",
+            "type": "Coupon"
+        },
+        {
+            "name": "Percentage discount by Item Category",
+            "type": "On Top"
+        },
+        {
+            "name": "Discount by points",
+            "type": "On Top"
+        },
+        {
+            "name": "Special campaigns",
+            "type": "Seasonal"
+        }
+    ],
+    "items": [
+        {
+            "name": "T-Shirt",
+            "price": 350,
+            "category": "Clothing"
+        },
+        {
+            "name": "Hoodie",
+            "price": 700,
+            "category": "Clothing"
+        },
+        {
+            "name": "Hat",
+            "price": 250,
+            "category": "Accessories"
+        },
+        {
+            "name": "Belt",
+            "price": 230,
+            "category": "Accessories"
+        },
+        {
+            "name": "Bag",
+            "price": 640,
+            "category": "Accessories"
+        },
+        {
+            "name": "Watch",
+            "price": 850,
+            "category": "Electronics"
+        }        
+    ]
+}
