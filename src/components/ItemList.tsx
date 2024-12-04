@@ -1,36 +1,29 @@
 import { useAppContext } from "../context/AppContext"
+import Item from "./Item"
+
+interface ItemsListProps{    
+    name: string
+    price: number
+    category: string    
+}
 
 const ItemList = () => {
-    const { cartState, cartDispatch, state } = useAppContext()
+    const { cartState, cartDispatch, items } = useAppContext()
 
-    const handleAddCart = () =>{
-        cartDispatch({type: 'ADD', payload: {
-           name: 'Bags',
-           price: 250,
-           total: 1,
-           category: 'Clothing'
-        }})
+    const handleAddCart = (elm:ItemsListProps) =>{
+        cartDispatch({type: 'ADD', payload: elm})
     }
 
-    const handleRemoveCart = () =>{
-        cartDispatch({
-            type: 'REMOVE',
-            payload: {
-                name: 'Bags',
-                price: 250,
-                total: 1,                
-            }
-        })
+    const handleRemoveCart = (elm:ItemsListProps) =>{
+        cartDispatch({type: 'REMOVE', payload: elm})
     }
 
   return (
-    <div>
-        Your Cart
-        {JSON.stringify({cartState, ...state})}        
-        <br></br>
-        <button onClick={handleAddCart}>ADD</button>        
-        <button onClick={handleRemoveCart}>REMOVE</button>
-    </div>
+    <>
+        {items?.map((elm, index)=>(
+            <Item add={()=>handleAddCart(elm)} remove={()=>handleRemoveCart(elm)} key={index} items={elm}/>
+        ))}    
+    </>
   )
 }
 

@@ -1,23 +1,18 @@
 import { createContext, SetStateAction, useContext, useMemo, useReducer, useState } from "react"
 import DiscountCategory from "../data/category.json"
+import { CalculatorContext } from "./CalculatorContext"
 
-interface ContextAppProps {
-    cart: unknown[]
-    setCart: React.Dispatch<SetStateAction<unknown[]>>
+interface ContextAppProps {    
     items: {
         name: string
         price: number
         category: string
     }[]
-    setItems: React.Dispatch<SetStateAction<{
-        name: string
-        price: number
-        category: string
-    }[]>>
-    state: {        
+    setItems: React.Dispatch<SetStateAction<ContextAppProps['items']>>
+    discountState: {        
         name: string
     } 
-    dispatch: React.Dispatch<unknown>
+    discountDispatch: React.Dispatch<{type: string}>
     campaigns: {
         name: 
         | 'Fixed amount' 
@@ -30,22 +25,16 @@ interface ContextAppProps {
         | 'Accessories'
         | 'Electronics';
     }[]
-    setCampaigns: React.Dispatch<SetStateAction<{
-        name: 
-        | 'Fixed amount' 
-        | 'Percentage discount' 
-        | 'Percentage discount by Item Category' 
-        | 'Discount by points'
-        | 'Special campaigns';
-        type: 
-        | 'Clothing'
-        | 'Accessories'
-        | 'Electronics';
-    }[]>>
+    setCampaigns: React.Dispatch<SetStateAction<ContextAppProps['campaigns']>>
     cartState: {
-        cart: unknown[]   
+        cart: {
+            name: string
+            price: number
+            total: number
+            category: string
+        }[]   
     } 
-    cartDispatch: React.Dispatch<unknown>
+    cartDispatch: React.Dispatch<{type: string, payload: {name: string; price: number; category: string}}>
 }
 
 const ContextApp = createContext<ContextAppProps>({} as ContextAppProps)
@@ -79,80 +68,78 @@ const reducer = (state, action) =>{
     }
 }
 
-const cartReducer = (state, action) => {        
+const cartReducer = (state, action) => {    
+    console.log(state,'s')    
     switch(action.type){
         case 'ADD':
-            if(state.cart.some((elm)=> elm.name === action.payload.name)){
-                return {                    
-                    cart: state.cart.map((item)=>{
+            if(state?.cart?.some((elm)=> elm.name === action.payload.name)){
+                return {
+                    cart: state?.cart?.map((item)=>{                        
                         return item.name === action.payload.name ? {
                             ...item,
-                            price: item.price += action.payload.price,
+                            price: item.price + action.payload.price,
                             total: item.total + 1
                         } : item
                     })
                 }
             }else{                            
-                return {                    
+                return {  
+                    ...state,                  
                     cart: [
-                        ...state.cart, action.payload
+                        ...state.cart, {...action.payload, total: 1}
                     ]
                 }            
             }            
         case 'REMOVE':            
-            if(state.cart.some((elm)=> elm.name === action.payload.name && elm.total >= 1)){                
-                return {                    
-                    cart: state.cart.map((item)=>{
-                        return item.name === action.payload.name ? {
-                            ...item,
-                            price: item.price -= action.payload.price,
-                            total: item.total - 1
-                        } : item
-                    })
-                }
-            }else{
-                return {...state}
-            }
+            const updateState = state.cart.map((item)=>
+                item.name === action.payload.name ? {
+                    ...item,
+                    price: item.price - action.payload.price,
+                    total: item.total - 1
+                } : item).filter(item => item.total > 0)
+                        
+            return {
+                ...state,
+                cart: updateState
+            }                                       
         default:
             return {...state}
     }
 }
 
-const DiscountInitialValues = {    
+const DiscountInitialValues = {        
     name: 'Fixed Amount'
 }
 
-const CartInitialValues = {
+const CartInitialValues:ContextAppProps['cartState'] = {    
     cart: []
 }
 
-export const AppContext = ({children}: {children: React.JSX.Element | React.JSX.Element[]}) => {
-    const [cart, setCart] = useState([])    
+export const AppContext = ({children}: {children: React.JSX.Element | React.JSX.Element[]}) => {    
     const [items, setItems] = useState(DiscountCategory.items)
     const [campaigns, setCampaigns] = useState<ContextAppProps['campaigns']>(DiscountCategory.campaigns as ContextAppProps['campaigns'])
-    const [state, dispatch] = useReducer(reducer, DiscountInitialValues)
+    const [discountState, discountDispatch] = useReducer(reducer, DiscountInitialValues)
     const [cartState, cartDispatch] = useReducer(cartReducer, CartInitialValues)    
-    const store = useMemo(()=>({
-        cart,
-        setCart,
+    const store = useMemo(()=>({        
         items,
         setItems,
-        state,
-        dispatch,
+        discountState,
+        discountDispatch,
         campaigns,
         setCampaigns,
         cartState,
         cartDispatch
-    }), [
-        cart,        
+    }), [        
         items,
-        state,    
+        discountState,    
         campaigns,
         cartState,
     ])
   return (
     <ContextApp.Provider value={store}>
-        {children}
+        <CalculatorContext>
+            {children}
+        </CalculatorContext>
     </ContextApp.Provider>
   )
 }
