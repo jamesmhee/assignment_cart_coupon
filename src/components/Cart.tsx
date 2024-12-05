@@ -46,7 +46,7 @@ const Cart = () => {
             <div className="flex gap-2 flex-col text-right">
                 <span>Total Price: {totalPrice} THB</span>
                 <span>Total Piece: {totalPiece} THB</span>         
-                <span>Total Price After Discount: {calState.total} THB</span>
+                <span>Total Price After Discount: {Number.isNaN(calState.total) ? 0 : calState.total} THB</span>
             </div>            
         </div>
         </div>)}
