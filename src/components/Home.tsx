@@ -20,7 +20,7 @@ interface Cart {
 
 const Home = () => {
     const { discountDispatch, campaigns, discountState, cartState, data, setData } = useAppContext()
-    const { calState, calDispatch } = useCalContext()    
+    const { calDispatch } = useCalContext()    
     const [tab, setTab] = useState('ItemsList')
     const [isInput, setIsInput] = useState({
         first: false,
@@ -39,7 +39,7 @@ const Home = () => {
             discount: discountState.name,            
         }
         setData((prev)=>({...prev, ...object}))
-        setTab('Cart')
+        if(cartState.cart.length > 0) setTab('Cart')
     }
         
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -68,7 +68,7 @@ const Home = () => {
         setData((prev)=>({...prev, categoryDiscount: e.target.value}))
     }
 
-    const handleChange = () =>{
+    const handleChange = () =>{        
         if(amountRef.current.value === 'Percentage discount by Item Category'){
             setIsInput({                
                 first: true,
@@ -145,7 +145,7 @@ const Home = () => {
                                                 return (
                                                     <option key={index} defaultValue={category}>{category}</option>
                                                 )
-                                            }) : (<option value="" disabled selected>Please add item</option>)
+                                            }) : (<option defaultValue="" disabled selected>Please add item</option>)
                                         }
                                     </select>
                                 </>

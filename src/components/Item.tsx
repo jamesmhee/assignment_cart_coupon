@@ -1,5 +1,7 @@
 import { GiClothes, GiPearlNecklace } from "react-icons/gi";
 import { FaComputer } from "react-icons/fa6";
+import { useAppContext } from "../context/AppContext";
+import { useMemo } from "react";
 
 interface ItemsProps {
     add: ()=>void
@@ -22,10 +24,14 @@ export const findIcon = (category: string) =>{
     }
 }
 
-const Item = ({add, remove, items}) => {
+const Item = ({add, remove, items}: ItemsProps) => {
+    const { cartState } = useAppContext()
+    const totalPiece = useMemo(()=>{
+        return cartState.cart.find((elm)=>elm.name === items.name)?.total
+    }, [cartState.cart])
   return (
-    <div className="border border-zinc-100 p-3 flex-grow flex-shrink-0 rounded flex">
-        <div className="flex-auto">
+    <div className="border border-zinc-100 p-3 flex-grow flex-shrink-0 justify-between rounded flex">
+        <div className="flex-shrink-0">
             <p className="text-2xl font-semibold">
                 {items.name}
             </p>
@@ -39,10 +45,13 @@ const Item = ({add, remove, items}) => {
                 Price: {items.price}                    
             </div>
         </div>
-        <div className="flex flex-col gap-2 justify-center ml-5">
-            <button className="bg-lime-600 rounded-md px-2 text-white" onClick={add} type="button">+</button>
-            <button className="bg-rose-600 rounded-md px-2 text-white" onClick={remove} type="button">-</button>
-        </div>
+        <div className="flex flex-col gap-2 justify-center w-32 max-sm:w-auto flex-shrink basis-1">
+            <button className="bg-lime-600 rounded-md px-2 text-white w-full" onClick={add} type="button">+</button>
+            <button className="bg-rose-600 rounded-md px-2 text-white w-full" onClick={remove} type="button">-</button>
+            <p className="text-center">
+                {totalPiece ? totalPiece : 0} Piece
+            </p>
+        </div>        
     </div>
   )
 }

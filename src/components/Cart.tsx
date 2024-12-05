@@ -21,17 +21,17 @@ const Cart = () => {
   return (
     <div className="w-full">
         {cartState?.cart?.length <= 0  ? 
-        (<>Cart Empty</>) : 
+        (<div className="flex w-full justify-center items-center h-full">Cart Empty</div>) : 
         (<div className="flex flex-col h-full justify-between">
             <div className="flex flex-col gap-2">
-            {cartState?.cart?.map((elm, index) => (
+            {cartState?.cart?.map((elm, index) => (                
                 <div key={`${elm.name}-${index}`} className="flex gap-3 items-center w-full">
                     <i className="rounded-full p-2 bg-blue-500 text-white">
                         {findIcon(elm.category)}
                     </i>
                     <div className="flex-auto font-bold">
                         {elm.name}
-                    </div>
+                    </div>                    
                     <div>
                         <span className="font-bold">Total Price: </span>
                         <span>{elm.price}</span>

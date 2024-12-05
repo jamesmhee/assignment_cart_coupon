@@ -38,7 +38,7 @@ interface ActionProps {
 
 export const ContextCalculator = createContext<ContextCalculatorProps>({} as ContextCalculatorProps)
 
-const calReducer = (state: CalState, action: ActionProps) => {    
+const calReducer = (state: CalState, action: ActionProps) => {       
     const findTotal = action?.payload?.cart?.reduce((total, item) => total + item.price, 0)
     const discount = Math.min(action?.payload?.amount, 100)
     const percent = (findTotal * discount) / 100
