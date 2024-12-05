@@ -15,7 +15,7 @@ const Cart = () => {
     }, [cartState.cart])
 
     const totalPriceDiscount = useMemo(()=>{
-        return calState.total
+        return !isNaN(calState.total) ? calState.total : "Calculating..."
     }, [calState])
 
   return (
