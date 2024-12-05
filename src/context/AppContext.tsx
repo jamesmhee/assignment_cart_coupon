@@ -1,6 +1,5 @@
 import { createContext, SetStateAction, useContext, useMemo, useReducer, useState } from "react"
 import DiscountCategory from "../data/category.json"
-import { CalculatorContext } from "./CalculatorContext"
 
 interface ContextAppProps {    
     items: {
@@ -9,6 +8,8 @@ interface ContextAppProps {
         category: string
     }[]
     setItems: React.Dispatch<SetStateAction<ContextAppProps['items']>>
+    data: DataProps
+    setData: React.Dispatch<SetStateAction<DataProps>>
     discountState: {        
         name: string
     } 
@@ -37,30 +38,54 @@ interface ContextAppProps {
     cartDispatch: React.Dispatch<{type: string, payload: {name: string; price: number; category: string}}>
 }
 
+interface DiscountState {
+    name: string
+}
+
+type DiscountAction = 
+    | { type: 'Fixed amount' }
+    | { type: 'Percentage discount' }
+    | { type: 'Percentage discount by Item Category' }
+    | { type: 'Discount by points' }
+    | { type: 'Special campaigns' }
+    | { type: 'DEFAULT' };
+
+export interface CartItem {
+    name: string;
+    price: number;
+    total: number;
+    category: string;
+}
+
+export interface CartState {
+    cart: CartItem[]
+}
+
+type CartActionType = 
+    | {type: 'ADD', payload:CartItem}
+    | {type: 'REMOVE', payload:CartItem}
+
+export interface DataProps {
+        cart: Cart[]
+        discount: string
+        amount: number
+    }
+    
+interface Cart {
+    name: string
+    price: number
+    category: string
+    total: number
+}    
+
 const ContextApp = createContext<ContextAppProps>({} as ContextAppProps)
 
-const reducer = (state, action) =>{    
+const reducer = (state: DiscountState, action: DiscountAction) =>{    
     switch(action.type){
-        case 'Fixed amount':
+        case action.type:
             return {
-                name: 'Fixed amount'
-            }
-        case 'Percentage discount':
-            return {
-                name: 'Percentage discount'
-            }
-        case 'Percentage discount by Item Category':
-            return {
-                name: 'Percentage discount by Item Category'
-            }
-        case 'Discount by points':
-            return {
-                name: 'Discount by points'
-            }
-        case 'Special campaigns':
-            return {
-                name: 'Special campaigns'
-            }
+                name: action.type
+            }        
         default:
             return {
                 name: ''
@@ -68,8 +93,7 @@ const reducer = (state, action) =>{
     }
 }
 
-const cartReducer = (state, action) => {    
-    console.log(state,'s')    
+const cartReducer = (state: CartState, action: CartActionType) => {        
     switch(action.type){
         case 'ADD':
             if(state?.cart?.some((elm)=> elm.name === action.payload.name)){
@@ -117,12 +141,15 @@ const CartInitialValues:ContextAppProps['cartState'] = {
 
 export const AppContext = ({children}: {children: React.JSX.Element | React.JSX.Element[]}) => {    
     const [items, setItems] = useState(DiscountCategory.items)
+    const [data, setData] = useState<DataProps>({} as DataProps)
     const [campaigns, setCampaigns] = useState<ContextAppProps['campaigns']>(DiscountCategory.campaigns as ContextAppProps['campaigns'])
     const [discountState, discountDispatch] = useReducer(reducer, DiscountInitialValues)
     const [cartState, cartDispatch] = useReducer(cartReducer, CartInitialValues)    
     const store = useMemo(()=>({        
         items,
         setItems,
+        data,
+        setData,
         discountState,
         discountDispatch,
         campaigns,
@@ -131,15 +158,14 @@ export const AppContext = ({children}: {children: React.JSX.Element | React.JSX.
         cartDispatch
     }), [        
         items,
+        data,
         discountState,    
         campaigns,
         cartState,
     ])
   return (
-    <ContextApp.Provider value={store}>
-        <CalculatorContext>
-            {children}
-        </CalculatorContext>
+    <ContextApp.Provider value={store}>        
+        {children}        
     </ContextApp.Provider>
   )
 }
