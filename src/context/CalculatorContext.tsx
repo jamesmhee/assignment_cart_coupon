@@ -48,7 +48,7 @@ const calReducer = (state: CalState, action: ActionProps) =>{
             return {
                 ...state,
                 discount: findTotal,
-                total: findTotal - action?.payload?.amount
+                total: (findTotal - action?.payload?.amount) <= 0 ? 0 : (findTotal - action?.payload?.amount)
             }
         case 'Percentage discount':            
             return {
@@ -64,7 +64,7 @@ const calReducer = (state: CalState, action: ActionProps) =>{
             return {
                 ...state,
                 discount: findTotal,
-                total: findTotal - percentCategory
+                total: (findTotal - percentCategory) <= 0 ? 0 : findTotal - percentCategory
             }
         case 'Discount by points':
             const findTwentyPercent = (findTotal * 20)/100
@@ -72,7 +72,7 @@ const calReducer = (state: CalState, action: ActionProps) =>{
             return {
                 ...state,
                 discount: findTotal,
-                total: findTotal - totalDiscount
+                total: findTotal - totalDiscount <= 0 ? 0 : findTotal - totalDiscount
             }
         case 'Special campaigns':
             const findDiscountEvery = Math.floor(findTotal / action?.payload?.everyAmount)
@@ -80,7 +80,7 @@ const calReducer = (state: CalState, action: ActionProps) =>{
             return {
                 ...state,
                 discount: findTotal,
-                total: findTotal - discount
+                total: findTotal - discount <= 0 ? 0 : findTotal - discount
             }
         default:
             return {

@@ -27,6 +27,7 @@ const Home = () => {
         second: false
     })
     const amountRef = useRef(null)
+    const buttonRef = useRef(null)
 
     const handleTable = (tabName: string) =>{
         setTab(tabName)
@@ -36,12 +37,10 @@ const Home = () => {
         e.preventDefault()
         const object = {
             ...cartState,
-            discount: discountState.name,
-            // totalDiscount: calState.discount,
-            // total: calState.total
+            discount: discountState.name,            
         }
-        setData((prev)=>({...prev, ...object})) 
-        setTab('Cart')              
+        setData((prev)=>({...prev, ...object}))         
+        setTab('Cart')
     }
         
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -54,7 +53,7 @@ const Home = () => {
             if(Number(e.target.value) > 100){
                 e.target.value = '100'
             }
-        }
+        }        
         return e.target.value = e.target.value.replace(/[^0-9]/, '')        
     }
 
@@ -86,7 +85,7 @@ const Home = () => {
         }
     }
 
-    useEffect(()=>{
+    useEffect(()=>{        
         calDispatch({type: data.discount, payload: data})
     },[data])
     
@@ -161,7 +160,7 @@ const Home = () => {
                         }                    
                     </div>
                 </div>
-                <button type="submit" className='border-2 border-zinc-300 rounded px-2 hover:bg-blue-500 hover:text-white'>Calculator</button>
+                <button ref={buttonRef} type="submit" className='border-2 border-zinc-300 rounded px-2 hover:bg-blue-500 hover:text-white'>Calculator</button>
             </form>
         </div>
     </div>
