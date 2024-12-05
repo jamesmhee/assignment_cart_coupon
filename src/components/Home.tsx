@@ -27,7 +27,6 @@ const Home = () => {
         second: false
     })
     const amountRef = useRef(null)
-    const buttonRef = useRef(null)
 
     const handleTable = (tabName: string) =>{
         setTab(tabName)
@@ -39,7 +38,7 @@ const Home = () => {
             ...cartState,
             discount: discountState.name,            
         }
-        setData((prev)=>({...prev, ...object}))         
+        setData((prev)=>({...prev, ...object}))
         setTab('Cart')
     }
         
@@ -160,7 +159,7 @@ const Home = () => {
                         }                    
                     </div>
                 </div>
-                <button ref={buttonRef} type="submit" className='border-2 border-zinc-300 rounded px-2 hover:bg-blue-500 hover:text-white'>Calculator</button>
+                <button type="submit" className='border-2 border-zinc-300 rounded px-2 hover:bg-blue-500 hover:text-white'>Calculator</button>
             </form>
         </div>
     </div>
