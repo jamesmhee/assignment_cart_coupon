@@ -38,56 +38,67 @@ interface ActionProps {
 
 export const ContextCalculator = createContext<ContextCalculatorProps>({} as ContextCalculatorProps)
 
-const calReducer = (state: CalState, action: ActionProps) =>{         
-    const findTotal = action?.payload?.cart?.reduce((total, item)=>total + item.price, 0)    
-    let discount = action?.payload?.amount > 100 ? 100 : action?.payload?.amount
+const calReducer = (state: CalState, action: ActionProps) => {    
+    const findTotal = action?.payload?.cart?.reduce((total, item) => total + item.price, 0)
+    const discount = Math.min(action?.payload?.amount, 100)
     const percent = (findTotal * discount) / 100
 
-    switch(action.type){
-        case 'Fixed Amount':            
+    const calculateTotal = (discountAmount: number) => {
+        const total = findTotal - discountAmount
+        return total <= 0 ? 0 : total
+    };
+
+    switch (action.type) {
+        case 'Fixed Amount':
             return {
                 ...state,
                 discount: findTotal,
-                total: (findTotal - action?.payload?.amount) <= 0 ? 0 : (findTotal - action?.payload?.amount)
-            }
-        case 'Percentage discount':            
+                total: calculateTotal(action?.payload?.amount),
+            };
+        case 'Percentage discount':
             return {
                 ...state,
                 discount: findTotal,
-                total: findTotal - percent
-            }
-        case 'Percentage discount by Item Category':            
-            const category = action?.payload?.categoryDiscount                        
-            const findTotalCategory = action?.payload?.cart?.filter(elm=>elm.category === category)
-            .reduce((total, item)=>total + item.price, 0)
-            const percentCategory = (findTotalCategory * discount) / 100            
+                total: findTotal - percent,
+            };
+        case 'Percentage discount by Item Category': {
+            const category = action?.payload?.categoryDiscount;
+            const findTotalCategory = action?.payload?.cart
+                .filter((item) => item.category === category)
+                .reduce((total, item) => total + item.price, 0);
+            const percentDiscount = (findTotalCategory * discount) / 100;
+
             return {
                 ...state,
                 discount: findTotal,
-                total: (findTotal - percentCategory) <= 0 ? 0 : findTotal - percentCategory
-            }
-        case 'Discount by points':
-            const findTwentyPercent = (findTotal * 20)/100
-            let totalDiscount = action?.payload?.amount > findTwentyPercent ? findTwentyPercent : action?.payload?.amount            
+                total: calculateTotal(percentDiscount),
+            };
+        }
+        case 'Discount by points': {
+            const findTwentyPercent = (findTotal * 20) / 100;
+            const discountPoint = Math.min(action?.payload?.amount, findTwentyPercent);
+
             return {
                 ...state,
                 discount: findTotal,
-                total: findTotal - totalDiscount <= 0 ? 0 : findTotal - totalDiscount
-            }
-        case 'Special campaigns':
-            const findDiscountEvery = Math.floor(findTotal / action?.payload?.everyAmount)
-            discount = action?.payload?.amount * findDiscountEvery
+                total: calculateTotal(discountPoint),
+            };
+        }
+        case 'Special campaigns': {
+            const findDiscountEvery = Math.floor(findTotal / action?.payload?.everyAmount);
+            const discountSpecial = action?.payload?.amount * findDiscountEvery;
+
             return {
                 ...state,
                 discount: findTotal,
-                total: findTotal - discount <= 0 ? 0 : findTotal - discount
-            }
+                total: calculateTotal(discountSpecial),
+            };
+        }
         default:
-            return {
-                ...state,
-            }
+            return state;
     }
-}
+};
+
 
 const CalInitialValue = {
     discount: 0,
